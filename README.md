@@ -21,7 +21,7 @@ Siga os passos abaixo na ordem correta.
 Abra um terminal e clone o projeto do GitHub para a sua máquina:
 
 ```bash
-git clone [URL_DO_SEU_REPOSITORIO_NO_GITHUB]
+git clone https://github.com/MarcoHenryz/ENGII-AplicativoRestaurante
 cd FlavorHub
 ```
 
