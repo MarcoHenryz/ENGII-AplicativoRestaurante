@@ -6,7 +6,7 @@ import api from '../services/api';
 interface ProfileData {
     name: string;
     avatarUrl?: string;
-    restaurantReviews: any[]; // Defina tipos mais específicos
+    restaurantReviews: any[];
     dishReviews: any[];
 }
 
@@ -49,7 +49,6 @@ const ProfileScreen = () => {
         </SafeAreaView>
     );
 };
-// Estilos para ProfileScreen (com pequenas adições)
 const stylesProfile = StyleSheet.create({
     centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     safeArea: { flex: 1, backgroundColor: '#F8F8F8' },

@@ -4,15 +4,15 @@ import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/MainNavigator';
 import StarRating from '../components/StarRating';
 import { Ionicons } from '@expo/vector-icons';
-import { useAuth } from '../contexts/AuthContext'; // NOVO
-import api from '../services/api'; // NOVO
+import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
 
 type RouteProps = RouteProp<RootStackParamList, 'RateDish'>;
 
 const RateDishScreen = () => {
     const navigation = useNavigation();
     const route = useRoute<RouteProps>();
-    const { user } = useAuth(); // Pega o usuário logado
+    const { user } = useAuth(); 
     const { dishId, dishName, dishImageUrl } = route.params;
 
     const [score, setScore] = useState(0);
@@ -42,7 +42,6 @@ const RateDishScreen = () => {
         <SafeAreaView style={stylesRateDish.safeArea}>
             <ScrollView style={stylesRateDish.container}>
                 <Text style={stylesRateDish.title}>Avaliar Prato</Text>
-                {/* ... (o resto do JSX da tela, mas agora com os `value` e `onChangeText` corretos) ... */}
                  <Text style={stylesRateDish.label}>Nota do Prato:</Text>
                 <StarRating rating={score} setRating={setScore} size={30} />
 
@@ -59,7 +58,6 @@ const RateDishScreen = () => {
         </SafeAreaView>
     );
 };
-// Estilos para RateDishScreen (sem alterações)
 const stylesRateDish = StyleSheet.create({
     safeArea: { flex: 1, backgroundColor: '#FFF' },
     container: { padding: 20 },
