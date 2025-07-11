@@ -99,3 +99,16 @@ cd FlavorHub
 ## ✅ Pronto!
 
 Seu ambiente está pronto! Agora você pode começar a desenvolver.
+
+
+Para rodar o app, dentro da pasta do backend
+
+ ```bash
+   yarn dev
+   ```
+
+Abra outro terminal e rode
+
+ ```bash
+   yarn start --web
+   ```
