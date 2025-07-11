@@ -103,7 +103,7 @@ Para rodar o app, dentro da pasta do backend
    yarn dev
    ```
 
-Abra outro terminal e rode
+Abra outro terminal e rode dentro da pasta mobile
 
  ```bash
    yarn start --web
