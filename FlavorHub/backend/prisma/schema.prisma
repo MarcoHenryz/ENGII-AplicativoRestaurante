@@ -1,0 +1,81 @@
+// backend/prisma/schema.prisma
+
+// Este schema define a estrutura do seu banco de dados.
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String // Em um app real, armazene o hash da senha
+  avatarUrl String?
+  createdAt DateTime @default(now())
+
+  restaurantReviews RestaurantReview[]
+  dishReviews       DishReview[]
+}
+
+model Restaurant {
+  id          String   @id @default(uuid())
+  name        String
+  address     String
+  imageUrl    String?
+  openingTime String?
+  createdAt   DateTime @default(now())
+
+  dishes            Dish[]
+  restaurantReviews RestaurantReview[]
+}
+
+model Dish {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String
+
+  dishReviews DishReview[]
+}
+
+model RestaurantReview {
+  id              String   @id @default(uuid())
+  foodScore       Int
+  serviceScore    Int
+  ambianceScore   Int
+  accessibilityScore Int
+  comment         String?
+  imageUrl        String?
+  createdAt       DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String
+}
+
+model DishReview {
+  id                String   @id @default(uuid())
+  score             Int
+  comment           String?
+  imageUrl          String?
+  suggestedPrice    Float?
+  createdAt         DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  dish   Dish   @relation(fields: [dishId], references: [id])
+  dishId String
+}
