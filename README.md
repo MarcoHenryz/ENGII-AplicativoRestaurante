@@ -97,10 +97,6 @@ cd FlavorHub
    O Metro Bundler abrirá no seu navegador. Escaneie o QR code com o aplicativo Expo Go no seu celular para rodar o projeto.
 
 ## ✅ Pronto!
-
-Seu ambiente está pronto! Agora você pode começar a desenvolver.
-
-
 Para rodar o app, dentro da pasta do backend
 
  ```bash
