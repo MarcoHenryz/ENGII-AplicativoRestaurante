@@ -1,23 +1,22 @@
 {
   "compilerOptions": {
-    /* --- Configurações Básicas --- */
-    "target": "es2017",            // Versão do JavaScript que será gerada
-    "module": "commonjs",           // Sistema de módulos a ser usado (padrão do Node.js)
-    "lib": ["es6"],                 // Bibliotecas padrão do JavaScript a serem incluídas
-    "allowJs": true,                // Permite que arquivos .js sejam importados em arquivos .ts
-    "outDir": "./dist",             // Pasta onde o JavaScript compilado será salvo
-    "rootDir": "./src",             // Pasta raiz do seu código TypeScript
+    "target": "es2017",
+    "module": "commonjs",
+    "lib": ["es6"],
+    "allowJs": true,
+    "outDir": "./dist",
+    "rootDir": "./", 
 
-    /* --- Checagens Rígidas de Tipo --- */
-    "strict": true,                 // Habilita todas as checagens de tipo estritas
+    "strict": true,
 
-    /* --- Interoperabilidade de Módulos --- */
-    "esModuleInterop": true,        // Permite compatibilidade entre diferentes sistemas de módulos
-    "resolveJsonModule": true,      // Permite importar arquivos .json como módulos
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    
+    "types": ["node"],
 
-    /* --- Avançado --- */
-    "skipLibCheck": true,           // Pula a verificação de tipos em arquivos de declaração (.d.ts)
-    "forceConsistentCasingInFileNames": true // Garante que os nomes dos arquivos sejam consistentes
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*"] // Especifica que apenas os arquivos dentro da pasta 'src' devem ser compilados
+  
+  "include": ["src/**/*", "prisma/seed.ts"]
 }

@@ -63,4 +63,27 @@ export class UserController {
       return res.status(500).json({ error: 'Falha ao buscar perfil do usuário' });
     }
   }
+
+    async login(req: Request, res: Response) {
+        const { email, password } = req.body;
+
+        try {
+            const user = await prisma.user.findUnique({ where: { email } });
+
+            // Verifica se o usuário existe e se a senha está correta
+            // ATENÇÃO: Esta é uma verificação de senha insegura, apenas para desenvolvimento.
+            // Em um projeto real, use uma biblioteca como 'bcrypt' para comparar hashes de senha.
+            if (!user || user.password !== password) {
+                return res.status(401).json({ error: 'E-mail ou senha inválidos.' });
+            }
+
+            const { password: _, ...userWithoutPassword } = user;
+            return res.json(userWithoutPassword);
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Ocorreu um erro interno.' });
+        }
+    }
+
 }

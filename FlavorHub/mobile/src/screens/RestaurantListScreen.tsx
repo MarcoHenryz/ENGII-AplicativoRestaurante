@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, SafeAreaView, Image } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, SafeAreaView, Image, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/MainNavigator';
@@ -13,11 +13,26 @@ type NavProps = NativeStackNavigationProp<RootStackParamList, 'RestaurantList'>;
 const RestaurantListScreen = () => {
     const navigation = useNavigation<NavProps>();
     const [restaurants, setRestaurants] = useState<RestaurantType[]>([]);
+    
+    
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        api.get('/restaurants').then(response => {
-            setRestaurants(response.data);
-        }).catch(error => console.error("Erro ao buscar restaurantes:", error));
+        setLoading(true); 
+        setError(null);
+
+        api.get('/restaurants')
+            .then(response => {
+                setRestaurants(response.data);
+            })
+            .catch(err => {
+                console.error("Erro ao buscar restaurantes:", err);
+                setError("Não foi possível carregar os restaurantes. Verifique sua conexão e se o servidor está rodando.");
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     }, []);
 
     const renderItem = ({ item }: { item: RestaurantType }) => (
@@ -32,6 +47,44 @@ const RestaurantListScreen = () => {
         </TouchableOpacity>
     );
 
+    const renderContent = () => {
+        if (loading) {
+            return (
+                <View style={styles.centered}>
+                    <ActivityIndicator size="large" color="#FF8C00" />
+                    <Text>Carregando restaurantes...</Text>
+                </View>
+            );
+        }
+
+        if (error) {
+            return (
+                <View style={styles.centered}>
+                    <Ionicons name="cloud-offline-outline" size={64} color="gray" />
+                    <Text style={styles.errorText}>{error}</Text>
+                </View>
+            );
+        }
+
+        if (restaurants.length === 0) {
+            return (
+                <View style={styles.centered}>
+                    <Ionicons name="sad-outline" size={64} color="gray" />
+                    <Text style={styles.errorText}>Nenhum restaurante encontrado.</Text>
+                </View>
+            );
+        }
+
+        return (
+            <FlatList
+                data={restaurants}
+                renderItem={renderItem}
+                keyExtractor={item => item.id}
+                showsVerticalScrollIndicator={false}
+            />
+        );
+    };
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
@@ -44,12 +97,7 @@ const RestaurantListScreen = () => {
                         <Ionicons name="notifications-outline" size={24} color="black" />
                     </TouchableOpacity>
                 </View>
-                <FlatList
-                    data={restaurants}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.id}
-                    showsVerticalScrollIndicator={false}
-                />
+                {renderContent()}
             </View>
         </SafeAreaView>
     );
@@ -65,6 +113,19 @@ const styles = StyleSheet.create({
     info: { marginLeft: 15, flex: 1 },
     name: { fontSize: 18, fontWeight: 'bold', marginBottom: 5 },
     details: { fontSize: 14, color: '#666', marginTop: 2 },
+
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    errorText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: 'gray',
+        textAlign: 'center',
+    }
 });
 
 export default RestaurantListScreen;

@@ -1,77 +1,112 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
+import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/MainNavigator';
 import StarRating from '../components/StarRating';
-import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 
-type RouteProps = RouteProp<RootStackParamList, 'RateDish'>;
+type RouteProps = RouteProp<RootStackParamList, 'RateRestaurant'>;
 
-const RateDishScreen = () => {
+const RateRestaurantScreen = () => {
     const navigation = useNavigation();
     const route = useRoute<RouteProps>();
-    const { user } = useAuth(); 
-    const { dishId, dishName, dishImageUrl } = route.params;
+    const { user } = useAuth();
+    const { restaurantId, restaurantName } = route.params;
 
-    const [score, setScore] = useState(0);
+    const [foodRating, setFoodRating] = useState(0);
+    const [drinkRating, setDrinkRating] = useState(0);
+    const [ambianceRating, setAmbianceRating] = useState(0);
+    const [serviceRating, setServiceRating] = useState(0);
     const [comment, setComment] = useState('');
-    const [suggestedPrice, setSuggestedPrice] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async () => {
         if (!user) return Alert.alert("Erro", "Você precisa estar logado para avaliar.");
-        if (score === 0) return Alert.alert("Erro", "Por favor, dê uma nota para o prato.");
+        if (foodRating === 0 || serviceRating === 0 || ambianceRating === 0) {
+            return Alert.alert("Campos obrigatórios", "Por favor, avalie a Comida, o Ambiente e o Atendimento.");
+        }
 
+        setLoading(true);
         try {
-            await api.post(`/dishes/${dishId}/review`, {
+            await api.post(`/restaurants/${restaurantId}/review`, {
                 userId: user.id,
-                score,
-                comment,
-                suggestedPrice: suggestedPrice ? parseFloat(suggestedPrice) : undefined,
+                foodScore: foodRating,
+                serviceScore: serviceRating,
+                ambianceScore: ambianceRating,
+                accessibilityScore: 5,
+                comment: comment,
             });
-            Alert.alert("Sucesso", "Sua avaliação foi enviada!");
+
+            Alert.alert("Sucesso!", "Sua avaliação foi enviada.");
             navigation.goBack();
+
         } catch (error) {
             console.error(error);
             Alert.alert("Erro", "Não foi possível enviar sua avaliação.");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <SafeAreaView style={stylesRateDish.safeArea}>
-            <ScrollView style={stylesRateDish.container}>
-                <Text style={stylesRateDish.title}>Avaliar Prato</Text>
-                 <Text style={stylesRateDish.label}>Nota do Prato:</Text>
-                <StarRating rating={score} setRating={setScore} size={30} />
-
-                <Text style={stylesRateDish.label}>O preço está desatualizado? Faça uma sugestão de atualização:</Text>
-                <TextInput style={stylesRateDish.inputPrice} placeholder="Insira o preço aqui" keyboardType="numeric" value={suggestedPrice} onChangeText={setSuggestedPrice} />
-
-                <Text style={stylesRateDish.label}>Quer dizer mais alguma coisa?</Text>
-                <TextInput style={stylesRateDish.inputComment} multiline placeholder="Escreva algo..." value={comment} onChangeText={setComment} />
+        <SafeAreaView style={styles.safeArea}>
+            <ScrollView style={styles.container}>
+                <Text style={styles.title}>Avaliar Restaurante</Text>
+                <Text style={styles.restaurantName}>{restaurantName}</Text>
                 
-                <TouchableOpacity style={stylesRateDish.submitButton} onPress={handleSubmit}>
-                    <Text style={stylesRateDish.submitButtonText}>ENVIAR FEEDBACK</Text>
+                <Text style={styles.subTitle}>Diga o que achou de {restaurantName}?</Text>
+                
+                <View style={styles.ratingRow}>
+                    <Text style={styles.label}>Comida:</Text>
+                    <StarRating rating={foodRating} setRating={setFoodRating} />
+                </View>
+                <View style={styles.ratingRow}>
+                    <Text style={styles.label}>Bebida:</Text>
+                    <StarRating rating={drinkRating} setRating={setDrinkRating} />
+                </View>
+                <View style={styles.ratingRow}>
+                    <Text style={styles.label}>Ambiente:</Text>
+                    <StarRating rating={ambianceRating} setRating={setAmbianceRating} />
+                </View>
+                <View style={styles.ratingRow}>
+                    <Text style={styles.label}>Atendimento:</Text>
+                    <StarRating rating={serviceRating} setRating={setServiceRating} />
+                </View>
+
+                <Text style={styles.labelComment}>Quer dizer mais alguma coisa?</Text>
+                <TextInput
+                    style={styles.inputComment}
+                    multiline
+                    placeholder="Seu comentário (opcional)"
+                    value={comment}
+                    onChangeText={setComment}
+                />
+
+                <TouchableOpacity style={styles.submitButton} onPress={handleSubmit} disabled={loading}>
+                    {loading ? (
+                        <ActivityIndicator color="#FFF" />
+                    ) : (
+                        <Text style={styles.submitButtonText}>ENVIAR FEEDBACK</Text>
+                    )}
                 </TouchableOpacity>
             </ScrollView>
         </SafeAreaView>
     );
 };
-const stylesRateDish = StyleSheet.create({
+
+const styles = StyleSheet.create({
     safeArea: { flex: 1, backgroundColor: '#FFF' },
     container: { padding: 20 },
-    title: { fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 20, backgroundColor: '#FFF5EB', padding: 10, borderRadius: 10, color: '#FF8C00' },
-    dishCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F8F8F8', borderRadius: 10, padding: 15, marginBottom: 20 },
-    dishImage: { width: 80, height: 80, borderRadius: 10, marginRight: 15 },
-    dishName: { fontSize: 18, fontWeight: 'bold' },
-    dishPrice: { fontSize: 14, color: 'gray', marginVertical: 4 },
-    label: { fontSize: 16, fontWeight: '500', marginTop: 20, marginBottom: 10 },
-    inputPrice: { backgroundColor: '#F0F0F0', borderRadius: 10, padding: 10, fontSize: 16 },
+    title: { fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 10, backgroundColor: '#FFF5EB', padding: 10, borderRadius: 10, color: '#FF8C00' },
+    restaurantName: { fontSize: 20, fontWeight: '600', textAlign: 'center', marginBottom: 20 },
+    subTitle: { fontSize: 18, fontWeight: '500', marginBottom: 15 },
+    ratingRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15, paddingVertical: 10 },
+    label: { fontSize: 16 },
+    labelComment: { fontSize: 16, fontWeight: '500', marginTop: 20, marginBottom: 10 },
     inputComment: { backgroundColor: '#F0F0F0', borderRadius: 10, padding: 10, height: 100, textAlignVertical: 'top' },
-    attachButton: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF5EB', padding: 15, borderRadius: 10, justifyContent: 'center' },
-    attachText: { color: '#FF8C00', marginLeft: 10, fontWeight: 'bold' },
     submitButton: { backgroundColor: '#FF8C00', padding: 15, borderRadius: 10, alignItems: 'center', marginTop: 30 },
     submitButtonText: { color: '#FFF', fontWeight: 'bold', fontSize: 16 },
 });
-export default RateDishScreen;
+
+export default RateRestaurantScreen;

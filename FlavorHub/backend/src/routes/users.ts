@@ -6,5 +6,6 @@ const userController = new UserController();
 
 userRoutes.post('/users', userController.create);
 userRoutes.get('/users/:id', userController.profile);
+userRoutes.post('/login', userController.login); 
 
 export { userRoutes };

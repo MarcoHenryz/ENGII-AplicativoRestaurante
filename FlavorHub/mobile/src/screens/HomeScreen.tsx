@@ -1,20 +1,23 @@
+// mobile/src/screens/HomeScreen.tsx
+// ARQUIVO CORRIGIDO
+
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/MainNavigator';
 import { Ionicons } from '@expo/vector-icons';
 
-type NavProps = NativeStackNavigationProp<RootStackParamList, 'MainTabs'>;
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const HomeScreen = () => {
-  const navigation = useNavigation<NavProps>();
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
         <View style={styles.header}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => Alert.alert("Botão Voltar", "Esta é a tela principal.")}>
                 <Ionicons name="arrow-back" size={24} color="black" />
             </TouchableOpacity>
             <TouchableOpacity>
@@ -38,20 +41,20 @@ const HomeScreen = () => {
             </TouchableOpacity>
         </View>
 
-        <View style={[styles.card, { backgroundColor: '#FF8C00' }]}>
+        <TouchableOpacity style={[styles.card, { backgroundColor: '#FF8C00' }]} onPress={() => navigation.navigate('RestaurantList')}>
             <Text style={styles.cardTitle}>Descubra as melhores opções para você em Arapongas</Text>
-            <TouchableOpacity style={styles.cardButton}>
+            <View style={styles.cardButton}>
                 <Text style={styles.cardButtonTextOrange}>Melhores opções</Text>
-            </TouchableOpacity>
-        </View>
+            </View>
+        </TouchableOpacity>
 
-        <View style={[styles.card, { backgroundColor: '#FFF', borderWidth: 1, borderColor: '#FF8C00' }]}>
+        <TouchableOpacity style={[styles.card, { backgroundColor: '#FFF', borderWidth: 1, borderColor: '#FF8C00' }]} onPress={() => Alert.alert("Em Breve", "Funcionalidade de sugestão de restaurante em desenvolvimento!")}>
             <Text style={[styles.cardTitle, { color: '#000' }]}>O Flavor Hub esqueceu de algum restaurante?</Text>
-            <TouchableOpacity style={[styles.cardButton, { backgroundColor: '#FF8C00'}]}>
+            <View style={[styles.cardButton, { backgroundColor: '#FF8C00'}]}>
                 <Ionicons name="location-outline" size={16} color="#FFF" />
                 <Text style={styles.cardButtonTextWhite}>Sugerir Restaurante</Text>
-            </TouchableOpacity>
-        </View>
+            </View>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
